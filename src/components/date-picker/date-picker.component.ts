@@ -24,18 +24,17 @@ export class DatePicker {
   private datePickerOption?: DatePickerOption
 
   constructor(public modalCtrl: ModalController, public viewCtrl: ViewController, params?: NavParams) {
-    this.currentMoment = moment()
     this.daysOfWeek = moment.weekdaysShort().map(day => day.charAt(0))
-
     this.datePickerOption = params && params.data ? params.data : this.datePickerOption
-    this.renderCalender(true)
+    this.currentMoment = this.getDefaultDate()
+    this.renderCalender()
   }
 
-  private renderCalender(setDefaultSelectedDate?: boolean) {
+  private renderCalender() {
     this.daysOfMonth = this.generateDaysOfMonth(this.currentMoment.year(), this.currentMoment.month() + 1, this.currentMoment.date())
     this.daysGroupedByWeek = this.groupByWeek(this.daysOfMonth)
 
-    if (setDefaultSelectedDate) this.setTodayAsDefaultSelectedDate()
+    this.setDefaultSelectedDate()
   }
 
   private generateDaysOfMonth(year: number, month: number, day: number) {
@@ -63,7 +62,11 @@ export class DatePicker {
         isEnabled: true
       }
 
-      dateItem.isEnabled = this.isBelongToThisMonth(immunableStartOfMonth, month) && this.minDate(dateItem.momentDate) && this.maxDate(dateItem.momentDate)
+      dateItem.isEnabled =
+        this.belongsToThisMonth(immunableStartOfMonth, month) &&
+        this.minDate(dateItem.momentDate) &&
+        this.maxDate(dateItem.momentDate) &&
+        !this.isBlocked(dateItem.momentDate)
 
       calendarDays.push(dateItem)
     }
@@ -86,10 +89,7 @@ export class DatePicker {
   }
 
   private selectDate(day: DateItem) {
-    if (!day.isEnabled) {
-      if (day.momentDate.isBefore(this.selectedDateItem.momentDate)) this.setMonthBack()
-      else this.setMonthForward()
-    }
+    if (!day.isEnabled) return false
 
     if (this.selectedDateItem && this.selectedDateItem.isSelected) {
       this.selectedDateItem.isSelected = false
@@ -100,9 +100,9 @@ export class DatePicker {
     this.currentMoment = day.momentDate.clone()
   }
 
-  private setTodayAsDefaultSelectedDate() {
-    let today = moment().startOf("day")
-    let foundDates = this.daysOfMonth.filter((item: DateItem) => today.isSame(item.momentDate.clone().startOf("day")))
+  private setDefaultSelectedDate() {
+    let date = this.getDefaultDate()
+    let foundDates = this.daysOfMonth.filter((item: DateItem) => date.isSame(item.momentDate.clone().startOf("day")))
 
     if (foundDates && foundDates.length > 0) {
       this.selectedDateItem = foundDates[0]
@@ -110,7 +110,13 @@ export class DatePicker {
     }
   }
 
-  private isBelongToThisMonth(momentDate: moment.Moment, month: number) {
+  private getDefaultDate() {
+    return this.datePickerOption || this.datePickerOption.selectedDate
+      ? moment(this.datePickerOption.selectedDate).startOf("day")
+      : moment().startOf("day")
+  }
+
+  private belongsToThisMonth(momentDate: moment.Moment, month: number) {
     return momentDate.month() + 1 === month
   }
 
@@ -145,6 +151,15 @@ export class DatePicker {
     let max = this.datePickerOption.max.setHours(0)
 
     return currentMomentDate.startOf("day").isSameOrBefore(moment(max).startOf("day"))
+  }
+
+  private isBlocked(momentDate: moment.Moment) {
+    if (!this.datePickerOption || !this.datePickerOption.blockedDates) return false
+    let foundDates = this.datePickerOption.blockedDates.filter(item => {
+      return momentDate.startOf("day").isSame(moment(item).startOf("day"))
+    })
+    if (foundDates && foundDates.length > 0) return true
+    else return false
   }
 
   private confirmDateSelection() {

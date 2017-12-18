@@ -13,7 +13,7 @@ export class HomePage {
 
   private showCalendar() {
     let options: DatePickerOption = {
-      max: new Date()
+      blockedDates: [new Date("December 25 2017")]
     }
     this.datePicker.showCalendar(options)
   }

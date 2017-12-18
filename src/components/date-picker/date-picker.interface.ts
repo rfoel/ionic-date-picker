@@ -9,4 +9,6 @@ export class DateItem {
 export class DatePickerOption {
   min?: Date
   max?: Date
+  selectedDate?: Date
+  blockedDates?: Array<Date>
 }
