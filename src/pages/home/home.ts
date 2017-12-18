@@ -1,7 +1,7 @@
 import { Component } from "@angular/core"
 import { IonicPage } from "ionic-angular"
 
-import { DatePicker } from "../../components/date-picker/date-picker"
+import { DatePicker, DatePickerOption } from "../../components/date-picker/date-picker"
 @IonicPage()
 @Component({
   selector: "page-home",
@@ -12,6 +12,9 @@ export class HomePage {
   constructor(private datePicker: DatePicker) {}
 
   private showCalendar() {
-    this.datePicker.showCalendar()
+    let options: DatePickerOption = {
+      max: new Date()
+    }
+    this.datePicker.showCalendar(options)
   }
 }

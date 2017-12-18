@@ -63,7 +63,7 @@ export class DatePicker {
         isEnabled: true
       }
 
-      dateItem.isEnabled = this.isBelongToThisMonth(immunableStartOfMonth, month) && this.startingFrom(dateItem.momentDate)
+      dateItem.isEnabled = this.isBelongToThisMonth(immunableStartOfMonth, month) && this.minDate(dateItem.momentDate) && this.maxDate(dateItem.momentDate)
 
       calendarDays.push(dateItem)
     }
@@ -133,11 +133,18 @@ export class DatePicker {
     this.renderCalender()
   }
 
-  private startingFrom(currentMomentDate: moment.Moment) {
-    if (!this.datePickerOption || !this.datePickerOption.minimumDate) return true
-    let startOfMinimumDay = this.datePickerOption.minimumDate.setHours(0)
+  private minDate(currentMomentDate: moment.Moment) {
+    if (!this.datePickerOption || !this.datePickerOption.min) return true
+    let min = this.datePickerOption.min.setHours(0)
 
-    return currentMomentDate.startOf("day").isSameOrAfter(moment(startOfMinimumDay).startOf("day"))
+    return currentMomentDate.startOf("day").isSameOrAfter(moment(min).startOf("day"))
+  }
+
+  private maxDate(currentMomentDate: moment.Moment) {
+    if (!this.datePickerOption || !this.datePickerOption.max) return true
+    let max = this.datePickerOption.max.setHours(0)
+
+    return currentMomentDate.startOf("day").isSameOrBefore(moment(max).startOf("day"))
   }
 
   private confirmDateSelection() {

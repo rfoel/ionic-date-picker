@@ -7,5 +7,6 @@ export class DateItem {
 }
 
 export class DatePickerOption {
-  minimumDate?: Date
+  min?: Date
+  max?: Date
 }
