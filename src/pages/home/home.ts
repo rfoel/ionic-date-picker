@@ -1,14 +1,17 @@
-import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { Component } from "@angular/core"
+import { IonicPage } from "ionic-angular"
 
+import { DatePicker } from "../../components/date-picker/date-picker"
+@IonicPage()
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: "page-home",
+  templateUrl: "home.html",
+  providers: [DatePicker]
 })
 export class HomePage {
+  constructor(private datePicker: DatePicker) {}
 
-  constructor(public navCtrl: NavController) {
-
+  private showCalendar() {
+    this.datePicker.showCalendar()
   }
-
 }

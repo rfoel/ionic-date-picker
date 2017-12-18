@@ -1,0 +1,50 @@
+<ion-grid class="header">
+  <ion-row align-items-stretch>
+    <ion-col text-center col-12 class="day-of-week">
+      {{currentMoment.format('dddd')}}
+    </ion-col>
+    <ion-col text-center col-4 ion-button icon-only full clear color="light" (click)="setMonthBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-col>
+    <ion-col text-center text-capitalize col-4 class="month">
+      <span>{{currentMoment.format('MMM')}}</span>
+    </ion-col>
+    <ion-col text-center col-4 ion-button icon-only full clear color="light" (click)="setMonthForward()">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </ion-col>
+    <ion-col text-center col-12 class="day">
+      {{currentMoment.format('D')}}
+    </ion-col>
+    <ion-col text-center col-4 ion-button icon-only full clear color="light" (click)="setYearBack()">
+      <ion-icon name="arrow-back"></ion-icon>
+    </ion-col>
+    <ion-col text-center col-4 class="year">
+      <span>{{currentMoment.format('YYYY')}}</span>
+    </ion-col>
+    <ion-col text-center col-4 ion-button icon-only full clear color="light" (click)="setYearForward()">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+<ion-grid (swiperight)="setMonthBack()" (swipeleft)="setMonthForward()" class="body" padding>
+  <ion-row>
+    <ion-col col-12 text-center text-capitalize class="month-year">
+      {{currentMoment.format('MMMM YYYY')}}
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col text-center *ngFor="let day of daysOfWeek" class="days-of-week">{{day}}</ion-col>
+  </ion-row>
+  <ion-row *ngFor="let week of daysGroupedByWeek">
+    <ion-col text-center [ngClass]="{'selected': day.isSelected, 'disabled': !day.isEnabled}" *ngFor="let day of week" (click)="selectDate(day)"
+      class="day">
+      <span>
+        {{day.momentDate.date()}}
+      </span>
+    </ion-col>
+  </ion-row>
+  <ion-row justify-content-end>
+    <button ion-button color="dark" clear (click)="cancel()">Cancel</button>
+    <button ion-button clear (click)="confirmDateSelection()">OK</button>
+  </ion-row>
+</ion-grid>
